@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-enum UserType { client, employee }
-
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
 
@@ -10,22 +8,22 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  UserType? _userType = UserType.client;
+  String userType = 'Client';
+  bool showPassword = false;
 
-  // كنترولرز للحقول
-  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController mobileController = TextEditingController();
-  final TextEditingController companyNameController = TextEditingController();
+  final TextEditingController companyController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
-  final TextEditingController jobTitleController = TextEditingController();
-  final TextEditingController departmentController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFB4B4B4),
+      backgroundColor: const Color(0xFFE0E0E0), // 10. خلفية أفتح
       body: Center(
         child: Container(
           width: 350,
@@ -33,7 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 24,
@@ -41,156 +39,162 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ],
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const  Text(
-                  'Register to get started with your account',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center, // نص في المنتصف أفقيًا
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Radio<UserType>(
-                      value: UserType.client,
-                      groupValue: _userType,
-                      onChanged: (val) => setState(() => _userType = val),
-                    ),
-                    const Text('Client'),
-                    const SizedBox(width: 24),
-                    Radio<UserType>(
-                      value: UserType.employee,
-                      groupValue: _userType,
-                      onChanged: (val) => setState(() => _userType = val),
-                    ),
-                    const Text('Employee'),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // الحقول المشتركة
-                TextField(
-                  controller: fullNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Full Name',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: mobileController,
-                  decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  keyboardType: TextInputType.phone,
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // الحقول الخاصة بكل نوع
-                if (_userType == UserType.client) ...[
-                  TextField(
-                    controller: companyNameController,
-                    decoration: InputDecoration(
-                      labelText: 'Company Name',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: addressController,
-                    decoration: InputDecoration(
-                      labelText: 'Address',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-                if (_userType == UserType.employee) ...[
-                  TextField(
-                    controller: jobTitleController,
-                    decoration: InputDecoration(
-                      labelText: 'Job title',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: departmentController,
-                    decoration: InputDecoration(
-                      labelText: 'Department',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                ],
-
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF20283D),
-                    minimumSize: const Size(double.infinity, 48),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    // هنا تضع منطق التسجيل (send to backend)
-                    if (_userType == UserType.client) {
-                      // استخدم companyNameController.text, addressController.text ...
-                    } else {
-                      // استخدم jobTitleController.text, departmentController.text ...
-                    }
-                  },
-                  child: const Text(
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 1. تعليمات مختصرة
+                  const Text(
                     'Register',
                     style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.white, // أو أي لون تفضله للنص
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Please fill in the form to create your account.',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                  ),
+                  const SizedBox(height: 18),
 
-              ],
+                  // 3. توضيح نوع الحساب
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Radio<String>(
+                        value: 'Client',
+                        groupValue: userType,
+                        onChanged: (value) => setState(() => userType = value!),
+                      ),
+                      const Text('Client'),
+                      Tooltip(
+                        message: 'For company owners who want to manage tasks.',
+                        child: const Icon(Icons.info_outline, size: 18, color: Colors.grey),
+                      ),
+                      const SizedBox(width: 24),
+                      Radio<String>(
+                        value: 'Employee',
+                        groupValue: userType,
+                        onChanged: (value) => setState(() => userType = value!),
+                      ),
+                      const Text('Employee'),
+                      Tooltip(
+                        message: 'For staff members who receive tasks.',
+                        child: const Icon(Icons.info_outline, size: 18, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+
+                  // 4. Placeholder واضح + 8. أيقونات
+                  TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.person_outline),
+                      labelText: 'Full Name',
+                      hintText: 'Enter your full name',
+                    ),
+                    validator: (value) => value!.isEmpty ? 'Full name required' : null,
+                  ),
+                  const SizedBox(height: 12),
+
+                  TextFormField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.email_outlined),
+                      labelText: 'Email',
+                      hintText: 'example@email.com',
+                    ),
+                    validator: (value) => value!.isEmpty ? 'Email required' : null,
+                  ),
+                  const SizedBox(height: 12),
+
+                  TextFormField(
+                    controller: phoneController,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.phone_outlined),
+                      labelText: 'Phone Number',
+                      hintText: '+9665XXXXXXXX',
+                    ),
+                    keyboardType: TextInputType.phone,
+                    validator: (value) => value!.isEmpty ? 'Phone required' : null,
+                  ),
+                  const SizedBox(height: 12),
+
+                  // 8. إظهار/إخفاء كلمة المرور
+                  TextFormField(
+                    controller: passwordController,
+                    obscureText: !showPassword,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.lock_outline),
+                      labelText: 'Password',
+                      hintText: 'Choose a strong password',
+                      suffixIcon: IconButton(
+                        icon: Icon(showPassword ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () => setState(() => showPassword = !showPassword),
+                      ),
+                    ),
+                    validator: (value) => value!.length < 6 ? 'Password too short' : null,
+                  ),
+                  const SizedBox(height: 12),
+
+                  // فقط للعميل
+                  if (userType == 'Client') ...[
+                    TextFormField(
+                      controller: companyController,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.business_outlined),
+                        labelText: 'Company Name',
+                        hintText: 'Your company name',
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Company name required' : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: addressController,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.location_on_outlined),
+                        labelText: 'Address',
+                        hintText: 'Company address',
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Address required' : null,
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+
+                  // 5. زر واضح (Sign Up)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          // 9. تحقق من صحة البيانات هنا
+                          // أضف إظهار مؤشر تحميل إذا أردت
+                        }
+                      },
+                      child: const Text('Sign Up', style: TextStyle(fontSize: 18)),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // 6. روابط إضافية (تسجيل الدخول)
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {
+                      // الانتقال لصفحة تسجيل الدخول
+                    },
+                    child: const Text("Already have an account? Log in"),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
