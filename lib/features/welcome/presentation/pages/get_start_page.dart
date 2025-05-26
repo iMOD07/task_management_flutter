@@ -90,51 +90,51 @@ class GetStartPage extends StatelessWidget {
           // موجة متحركة في الأعلى
           AnimatedWave(),
 
-          // محتوى الصفحة
-          Align(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(height: 18),
-                Icon(Icons.check_circle_outline, size: 70, color: Color(0xFF232A4E)),
-                SizedBox(height: 18),
-                Text(
-                  "Welcome to Task Management",
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0D1B2A),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 32),
-                SizedBox(
-                  width: 200,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // ضع هنا التنقل للصفحة التالية
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) => NextPage()));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF1B263B),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      elevation: 6,
+          // محتوى الصفحة مع Scroll عشان ما يصير Overflow
+          SingleChildScrollView(
+            child: Container(
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 400), // المسافة من أعلى الشاشة للمحتوى
+                  Text(
+                    "Welcome to Task Management",
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0D1B2A),
                     ),
-                    child: Text(
-                      "Get Start",
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: Color(0xFFE0E1DD),
-                          fontWeight: FontWeight.bold
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 32),
+                  SizedBox(
+                    width: 200,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // ضع هنا التنقل للصفحة التالية
+                        // Navigator.push(context, MaterialPageRoute(builder: (context) => NextPage()));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF1B263B),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        elevation: 6,
+                      ),
+                      child: Text(
+                        "Get Start",
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Color(0xFFE0E1DD),
+                            fontWeight: FontWeight.bold
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
