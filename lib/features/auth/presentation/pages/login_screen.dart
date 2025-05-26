@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_management_app/features/auth/presentation/pages/register_screen.dart';
 
 enum UserType { client, employee, admin }
 
@@ -140,7 +141,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        // هنا تروح لصفحة التسجيل
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                        );
                       },
                       child: const Text(
                         "Register here.",
