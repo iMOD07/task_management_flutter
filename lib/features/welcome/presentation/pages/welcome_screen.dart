@@ -6,12 +6,12 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Scaffold هو الحاوية الرئيسية لكل شاشة في Flutter
+    // Scaffold is the main container for each screen in Flutter
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F1F1), // نفس لون الخلفية بالصورة
+      backgroundColor: const Color(0xFFF1F1F1), // Same background color as the image
       body: Stack(
         children: [
-          // الجزء العلوي: موجة ديكورية
+          // Top: Decorative wave
           Positioned(
             top: 0,
             left: 0,
@@ -20,59 +20,58 @@ class WelcomeScreen extends StatelessWidget {
               clipper: WaveClipper(),
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.33,
-                color: const Color(0xFF20283D), // نفس لون الموجة بالصورة
+                color: const Color(0xFF20283D), // Same background color as the image
               ),
             ),
           ),
-          // محتوى الشاشة: النص والزر
+          // Screen content: text and button
           Center(
+
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Spacer(flex: 2),
-                const Text(
+                SizedBox(height: 250),
+                Text(
                   "Welcome to Task Management",
                   style: TextStyle(
-                    fontSize: 26,
+                    fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 56),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // هنا تقدر تضيف التنقل لصفحة تسجيل الدخول أو الصفحة التالية
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF20283D),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(40),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        elevation: 2,
+                SizedBox(height: 40),
+                SizedBox(
+                  width: 250, // New button display
+                  height: 49, // New button height
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Action on click
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF222940),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Text(
-                        "Get Start",
-                        style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                    child: Text(
+                      "Get Start",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
                       ),
                     ),
                   ),
                 ),
-                const Spacer(flex: 3),
               ],
             ),
-          ),
+          )
+
         ],
       ),
     );
   }
 }
 
-// كلاس لرسم الموجة أعلى الشاشة
+// Class to draw the wave at the top of the screen
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
