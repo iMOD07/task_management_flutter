@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'features/welcome/presentation/pages/welcome_screen.dart';
+import 'features/welcome/presentation/pages/get_start_page.dart';
 
 void main() {
-  runApp(const MaterialApp(
+  runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: WelcomeScreen(),
+    home: GetStartPage(),
   ));
 }
