@@ -38,8 +38,10 @@ class _AnimatedWaveState extends State<AnimatedWave>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color(0xFF232A4E),
-                  Color(0xFF5061A7),
+                  //Color(0xFF232A4E),
+                  //Color(0xFF5061A7),
+                  Color(0xFF0D1B2A),
+                  Color(0xFF1B263B),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -94,7 +96,7 @@ class GetStartPage extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: 30),
+                SizedBox(height: 18),
                 Icon(Icons.check_circle_outline, size: 70, color: Color(0xFF232A4E)),
                 SizedBox(height: 18),
                 Text(
@@ -102,7 +104,7 @@ class GetStartPage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF232A4E),
+                    color: Color(0xFF0D1B2A),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -116,7 +118,7 @@ class GetStartPage extends StatelessWidget {
                       // Navigator.push(context, MaterialPageRoute(builder: (context) => NextPage()));
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF232A4E),
+                      backgroundColor: Color(0xFF1B263B),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),
@@ -126,7 +128,7 @@ class GetStartPage extends StatelessWidget {
                       "Get Start",
                       style: TextStyle(
                           fontSize: 18,
-                          color: Colors.white,
+                          color: Color(0xFFE0E1DD),
                           fontWeight: FontWeight.bold
                       ),
                     ),
