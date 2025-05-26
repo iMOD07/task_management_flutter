@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+import '../../../auth/presentation/pages/login_screen.dart';
+
 // كلاس الموجة المتحركة
 class AnimatedWave extends StatefulWidget {
   @override
@@ -113,9 +115,11 @@ class GetStartPage extends StatelessWidget {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        // ضع هنا التنقل للصفحة التالية
-                        // Navigator.push(context, MaterialPageRoute(builder: (context) => NextPage()));
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        );
                       },
+
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF1B263B),
                         shape: RoundedRectangleBorder(
