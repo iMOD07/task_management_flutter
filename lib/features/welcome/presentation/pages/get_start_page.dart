@@ -1,16 +1,18 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-
 import '../../../auth/presentation/pages/login_screen.dart';
 
-// كلاس الموجة المتحركة
+import 'package:flutter/material.dart';
+import 'dart:math';
+
 class AnimatedWave extends StatefulWidget {
+  const AnimatedWave({super.key});
+
   @override
-  _AnimatedWaveState createState() => _AnimatedWaveState();
+  AnimatedWaveState createState() => AnimatedWaveState();
 }
 
-class _AnimatedWaveState extends State<AnimatedWave>
-    with SingleTickerProviderStateMixin {
+class AnimatedWaveState extends State<AnimatedWave> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -28,6 +30,7 @@ class _AnimatedWaveState extends State<AnimatedWave>
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -40,8 +43,6 @@ class _AnimatedWaveState extends State<AnimatedWave>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  //Color(0xFF232A4E),
-                  //Color(0xFF5061A7),
                   Color(0xFF0D1B2A),
                   Color(0xFF1B263B),
                 ],
@@ -82,7 +83,35 @@ class SineWaveClipper extends CustomClipper<Path> {
 }
 
 // الصفحة الرئيسية (Get Start)
-class GetStartPage extends StatelessWidget {
+class GetStartPage extends StatefulWidget {
+  @override
+  State<GetStartPage> createState() => _GetStartPageState();
+}
+
+class _GetStartPageState extends State<GetStartPage> with TickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _fadeController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 1200),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeIn,
+    );
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,44 +125,106 @@ class GetStartPage extends StatelessWidget {
           SingleChildScrollView(
             child: Container(
               width: double.infinity,
+              height: MediaQuery.of(context).size.height,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: 400), // المسافة من أعلى الشاشة للمحتوى
-                  Text(
-                    "Welcome to Task Management",
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF0D1B2A),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 32),
-                  SizedBox(
-                    width: 200,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const LoginScreen()),
-                        );
-                      },
+                  SizedBox(height: 150), // المسافة من أعلى الشاشة للمحتوى
 
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF1B263B),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                  // 1. صورة الشعار مع أنيميشن
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Image.asset(
+                      'assets/logo_page_home.png', // ضع الصورة في assets وأضفها في pubspec.yaml
+                      width: 300,
+                      height: 200,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+
+                  // 4. لمسة أنيميشن للنصوص
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Column(
+                      children: [
+                        Text(
+                          "Welcome to Task Management",
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF0D1B2A),
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        elevation: 6,
+                        SizedBox(height: 5),
+                        Text(
+                          "Start your journey to organized work!",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                            color: Color(0xFF0D1B2A),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  SizedBox(height: 32),
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: SizedBox(
+                      width: 200,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => const LoginScreen()),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF1B263B),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          elevation: 6,
+                        ),
+                        child: Text(
+                          "Get Started",
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Color(0xFFE0E1DD),
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
                       ),
-                      child: Text(
-                        "Get Start",
-                        style: TextStyle(
-                            fontSize: 18,
-                            color: Color(0xFFE0E1DD),
-                            fontWeight: FontWeight.bold
-                        ),
+                    ),
+                  ),
+                  Spacer(), // يملأ الفراغ حتى يظهر الفوتر في الأسفل
+                  // 7. Footer
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 14.0),
+                      child: Column(
+                        children: [
+                          Divider(
+                            color: Colors.grey.shade300,
+                            thickness: 1,
+                            indent: 60,
+                            endIndent: 60,
+                          ),
+                          SizedBox(height: 6),
+                          Text(
+                            "© 2025 Task Management | All rights reserved",
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 13,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          // يمكنك إضافة سياسة الخصوصية أو الدعم هنا أيضاً
+                        ],
                       ),
                     ),
                   ),
