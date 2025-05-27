@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:task_management_app/features/auth/data/repositories/auth_repository.dart';
+// import 'auth_repository.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -19,6 +21,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController addressController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+
+  // Add Repository
+  final AuthRepository _authRepository = AuthRepository();
+
+  //Register function
+  void _onRegisterPressed() async {
+    if (_formKey.currentState!.validate()) {
+      Map<String, dynamic> data = {
+        "fullName": nameController.text,
+        "email": emailController.text,
+        "password": passwordController.text,
+        "mobileNumber": phoneController.text,
+        "userType": userType,
+      };
+
+      if (userType == 'Client') {
+        data.addAll({
+          "companyName": companyController.text,
+          "address": addressController.text,
+        });
+      } else {
+        data.addAll({
+          "jobTitle": "",
+          "department": "",
+        });
+      }
+
+      String? result = await _authRepository.registerUser(data);
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Text(result ?? "yes, Registration successful"),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +155,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.phone_outlined),
                       labelText: 'Phone Number',
-                      hintText: '+9665XXXXXXXX',
+                      hintText: '05XXXXXXXX',
                     ),
                     keyboardType: TextInputType.phone,
                     validator: (value) => value!.isEmpty ? 'Phone required' : null,
@@ -169,12 +207,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // 9. تحقق من صحة البيانات هنا
-                          // أضف إظهار مؤشر تحميل إذا أردت
-                        }
-                      },
+                      onPressed: _onRegisterPressed, // هنا الربط!
                       child: const Text('Sign Up', style: TextStyle(fontSize: 18)),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
