@@ -2,8 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../auth/presentation/pages/login_screen.dart';
 
-import 'package:flutter/material.dart';
-import 'dart:math';
 
 class AnimatedWave extends StatefulWidget {
   const AnimatedWave({super.key});
@@ -57,7 +55,7 @@ class AnimatedWaveState extends State<AnimatedWave> with SingleTickerProviderSta
   }
 }
 
-// كلاس رسم شكل الموجة
+// Waveform Drawing Class
 class SineWaveClipper extends CustomClipper<Path> {
   final double animationValue;
   SineWaveClipper({required this.animationValue});
@@ -82,7 +80,7 @@ class SineWaveClipper extends CustomClipper<Path> {
       animationValue != oldClipper.animationValue;
 }
 
-// الصفحة الرئيسية (Get Start)
+// Home (Get Start)
 class GetStartPage extends StatefulWidget {
   @override
   State<GetStartPage> createState() => _GetStartPageState();
@@ -115,13 +113,13 @@ class _GetStartPageState extends State<GetStartPage> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF5F6FA), // لون خلفية هادئ
+      backgroundColor: Color(0xFFF5F6FA),
       body: Stack(
         children: [
-          // موجة متحركة في الأعلى
+          // Moving wave at the top
           AnimatedWave(),
 
-          // محتوى الصفحة مع Scroll عشان ما يصير Overflow
+          // Page content with scroll to avoid overflow
           SingleChildScrollView(
             child: Container(
               width: double.infinity,
@@ -129,20 +127,20 @@ class _GetStartPageState extends State<GetStartPage> with TickerProviderStateMix
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: 150), // المسافة من أعلى الشاشة للمحتوى
+                  SizedBox(height: 150), // Distance from top of screen to content
 
-                  // 1. صورة الشعار مع أنيميشن
+                  // 1 - Logo image with animation
                   FadeTransition(
                     opacity: _fadeAnimation,
                     child: Image.asset(
-                      'assets/logo_page_home.png', // ضع الصورة في assets وأضفها في pubspec.yaml
+                      'assets/logo_page_home.png',
                       width: 300,
                       height: 200,
                     ),
                   ),
                   SizedBox(height: 10),
 
-                  // 4. لمسة أنيميشن للنصوص
+                  // Animation touch for texts
                   FadeTransition(
                     opacity: _fadeAnimation,
                     child: Column(
@@ -200,8 +198,8 @@ class _GetStartPageState extends State<GetStartPage> with TickerProviderStateMix
                       ),
                     ),
                   ),
-                  Spacer(), // يملأ الفراغ حتى يظهر الفوتر في الأسفل
-                  // 7. Footer
+                  Spacer(), // Fill in the blank until the footer appears at the bottom.
+                  // Footer
                   FadeTransition(
                     opacity: _fadeAnimation,
                     child: Padding(
@@ -211,10 +209,10 @@ class _GetStartPageState extends State<GetStartPage> with TickerProviderStateMix
                           Divider(
                             color: Colors.grey.shade300,
                             thickness: 1,
-                            indent: 60,
-                            endIndent: 60,
+                            indent: 100,
+                            endIndent: 100,
                           ),
-                          SizedBox(height: 6),
+                          SizedBox(height: 5),
                           Text(
                             "© 2025 Task Management | All rights reserved",
                             style: TextStyle(
@@ -223,7 +221,7 @@ class _GetStartPageState extends State<GetStartPage> with TickerProviderStateMix
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          // يمكنك إضافة سياسة الخصوصية أو الدعم هنا أيضاً
+                          // You can add your privacy policy or support here too.
                         ],
                       ),
                     ),
