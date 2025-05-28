@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_app/features/auth/data/repositories/auth_repository.dart';
-// import 'auth_repository.dart';
+import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -21,11 +21,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController addressController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-
-  // Add Repository
   final AuthRepository _authRepository = AuthRepository();
 
-  //Register function
+  // دالة التسجيل
   void _onRegisterPressed() async {
     if (_formKey.currentState!.validate()) {
       Map<String, dynamic> data = {
@@ -49,10 +47,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
 
       String? result = await _authRepository.registerUser(data);
+      if (!mounted) return;
+
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
-          content: Text(result ?? "yes, Registration successful"),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.check_circle, color: Colors.green, size: 50),
+              const SizedBox(height: 16),
+              Text(
+                'You have been successfully registered',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              const SizedBox(height: 8),
+              Text('You can now log in to your account.'),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF20283D),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  );
+                },
+                child: const Text('Login'),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -61,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFE0E0E0), // 10. خلفية أفتح
+      backgroundColor: const Color(0xFFE0E0E0),
       body: Center(
         child: Container(
           width: 350,
@@ -83,7 +112,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // 1. تعليمات مختصرة
                   const Text(
                     'Register',
                     style: TextStyle(
@@ -94,11 +122,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 8),
                   Text(
                     'Please fill in the form to create your account.',
-                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   const SizedBox(height: 18),
 
-                  // 3. توضيح نوع الحساب
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -108,10 +135,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onChanged: (value) => setState(() => userType = value!),
                       ),
                       const Text('Client'),
-                      Tooltip(
-                        message: 'For company owners who want to manage tasks.',
-                        child: const Icon(Icons.info_outline, size: 18, color: Colors.grey),
-                      ),
                       const SizedBox(width: 24),
                       Radio<String>(
                         value: 'Employee',
@@ -119,18 +142,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onChanged: (value) => setState(() => userType = value!),
                       ),
                       const Text('Employee'),
-                      Tooltip(
-                        message: 'For staff members who receive tasks.',
-                        child: const Icon(Icons.info_outline, size: 18, color: Colors.grey),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 18),
 
-                  // 4. Placeholder واضح + 8. أيقونات
                   TextFormField(
                     controller: nameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.person_outline),
                       labelText: 'Full Name',
                       hintText: 'Enter your full name',
@@ -141,7 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   TextFormField(
                     controller: emailController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.email_outlined),
                       labelText: 'Email',
                       hintText: 'example@email.com',
@@ -152,7 +170,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   TextFormField(
                     controller: phoneController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.phone_outlined),
                       labelText: 'Phone Number',
                       hintText: '05XXXXXXXX',
@@ -162,12 +180,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  // 8. إظهار/إخفاء كلمة المرور
                   TextFormField(
                     controller: passwordController,
                     obscureText: !showPassword,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock_outline),
+                      prefixIcon: const Icon(Icons.lock_outline),
                       labelText: 'Password',
                       hintText: 'Choose a strong password',
                       suffixIcon: IconButton(
@@ -179,11 +196,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 12),
 
-                  // فقط للعميل
                   if (userType == 'Client') ...[
                     TextFormField(
                       controller: companyController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.business_outlined),
                         labelText: 'Company Name',
                         hintText: 'Your company name',
@@ -193,7 +209,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: addressController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.location_on_outlined),
                         labelText: 'Address',
                         hintText: 'Company address',
@@ -203,11 +219,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 12),
                   ],
 
-                  // 5. زر واضح (Sign Up)
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _onRegisterPressed, // هنا الربط!
+                      onPressed: _onRegisterPressed,
                       child: const Text('Sign Up', style: TextStyle(fontSize: 18)),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -217,12 +232,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-
-                  // 6. روابط إضافية (تسجيل الدخول)
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () {
-                      // الانتقال لصفحة تسجيل الدخول
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
                     },
                     child: const Text("Already have an account? Log in"),
                   ),

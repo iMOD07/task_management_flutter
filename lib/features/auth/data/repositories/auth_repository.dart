@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:task_management_app/core/utils/token_storage.dart'; // Import the storage file
 
 class AuthRepository {
   Future<String?> registerUser(Map<String, dynamic> data) async {
@@ -23,6 +24,9 @@ class AuthRepository {
         body: jsonEncode(data),
       );
       if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        String token = responseData['token'];
+        await saveToken(token);
         return response.body; // نجاح
       } else {
         return "فشل التسجيل: ${response.body}";
