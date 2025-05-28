@@ -17,6 +17,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  // for Employee
+  final TextEditingController jobTitleController = TextEditingController();
+  final TextEditingController departmentController = TextEditingController();
+  // for Client
   final TextEditingController companyController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
 
@@ -38,52 +42,73 @@ class _RegisterScreenState extends State<RegisterScreen> {
         data.addAll({
           "companyName": companyController.text,
           "address": addressController.text,
+          "userType": "Client",
         });
-      } else {
+      } else if (userType == 'Employee') {
         data.addAll({
-          "jobTitle": "",
-          "department": "",
+          "jobTitle": jobTitleController.text,
+          "department": departmentController.text,
+          "userType": "Employee",
         });
       }
 
-      String? result = await _authRepository.registerUser(data);
+      var result = await _authRepository.registerUser(data);
+
       if (!mounted) return;
 
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.check_circle, color: Colors.green, size: 50),
-              const SizedBox(height: 16),
-              Text(
-                'You have been successfully registered',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              const SizedBox(height: 8),
-              Text('You can now log in to your account.'),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF20283D),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+      if (result["success"] == true) {
+        // فقط عند النجاح!
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.check_circle, color: Colors.green, size: 50),
+                const SizedBox(height: 16),
+                Text(
+                  'تم تسجيلك بنجاح',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  );
-                },
-                child: const Text('Login'),
+                const SizedBox(height: 8),
+                Text('يمكنك الآن تسجيل الدخول إلى حسابك.'),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF20283D),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
+                  },
+                  child: const Text('تسجيل الدخول', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          ),
+        );
+      } else {
+        // في حال الخطأ
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text('فشل التسجيل'),
+            content: Text(result["message"] ?? "حدث خطأ غير متوقع"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Ok'),
               ),
             ],
           ),
-        ),
-      );
+        );
+      }
     }
   }
 
@@ -219,6 +244,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 12),
                   ],
 
+                  if (userType == 'Employee') ...[
+                    TextFormField(
+                      controller: jobTitleController,
+                      decoration: InputDecoration(
+                        labelText: 'Job Title',
+                        prefixIcon: Icon(Icons.work),
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Job title required' : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: departmentController,
+                      decoration: InputDecoration(
+                        labelText: 'Department',
+                        prefixIcon: Icon(Icons.apartment),
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Department required' : null,
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -232,6 +278,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () {

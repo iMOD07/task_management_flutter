@@ -1,20 +1,17 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:task_management_app/core/utils/token_storage.dart'; // Import the storage file
+import 'package:http/http.dart' as http;
 
 class AuthRepository {
-  Future<String?> registerUser(Map<String, dynamic> data) async {
-    // تحديد الرابط حسب نوع المستخدم
+  Future<Map<String, dynamic>> registerUser(Map<String, dynamic> data) async {
     String userType = data["userType"];
     late String urlStr;
     if (userType == "Client") {
       urlStr = 'http://localhost:8080/api/auth/register/client';
-    } else {
+    } else if (userType == "Employee") {
       urlStr = 'http://localhost:8080/api/auth/register/employee';
     }
     final url = Uri.parse(urlStr);
 
-    // حذف userType لأنه غير مطلوب في الباكند
     data.remove("userType");
 
     try {
@@ -25,14 +22,17 @@ class AuthRepository {
       );
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        String token = responseData['token'];
-        await saveToken(token);
-        return response.body; // نجاح
+        // إذا فيه توكن اعتبر التسجيل ناجح
+        if (responseData['token'] != null) {
+          return {"success": true, "data": responseData};
+        } else {
+          return {"success": false, "message": response.body.toString()};
+        }
       } else {
-        return "فشل التسجيل: ${response.body}";
+        return {"success": false, "message": response.body.toString()};
       }
     } catch (e) {
-      return "خطأ في الاتصال: $e";
+      return {"success": false, "message": e.toString()};
     }
   }
 }
