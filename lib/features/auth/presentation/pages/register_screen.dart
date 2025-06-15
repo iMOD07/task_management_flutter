@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:task_management_app/features/auth/data/repositories/auth_repository.dart';
 import 'login_screen.dart';
+import 'dart:convert';
+
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -94,19 +96,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
       } else {
-        // في حال الخطأ
+        // In case of error
         showDialog(
           context: context,
-          builder: (_) => AlertDialog(
-            title: Text('Registration failed'),
-            content: Text(result["message"] ?? "An unexpected error occurred"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Ok'),
-              ),
-            ],
-          ),
+          builder: (_) {
+            // We are trying to decode the JSON if it is really JSON
+            String errorMessage = "";
+            try {
+              final errorObj = jsonDecode(result["message"]);
+              if (errorObj is Map) {
+                errorObj.forEach((key, value) {
+                  errorMessage += "$value\n";
+                });
+              } else {
+                errorMessage = result["message"].toString();
+              }
+            } catch (e) {
+              // If JSON decoding fails, we display the text as is.
+              errorMessage = result["message"].toString();
+            }
+
+            return AlertDialog(
+              title: Text('Registration failed'),
+              content: Text(errorMessage.trim()),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('Ok'),
+                ),
+              ],
+            );
+          },
         );
       }
     }
@@ -217,7 +237,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onPressed: () => setState(() => showPassword = !showPassword),
                       ),
                     ),
-                    validator: (value) => value!.length < 6 ? 'Password too short' : null,
+                    validator: (value) => value!.isEmpty ? 'Password required' : null,
                   ),
                   const SizedBox(height: 12),
 
