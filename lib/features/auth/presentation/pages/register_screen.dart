@@ -68,11 +68,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Icon(Icons.check_circle, color: Colors.green, size: 50),
                 const SizedBox(height: 16),
                 Text(
-                  'تم تسجيلك بنجاح',
+                  'You have been successfully registered',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
                 const SizedBox(height: 8),
-                Text('يمكنك الآن تسجيل الدخول إلى حسابك.'),
+                Text('You can now log in to your account'),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -87,7 +87,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       MaterialPageRoute(builder: (_) => const LoginScreen()),
                     );
                   },
-                  child: const Text('تسجيل الدخول', style: TextStyle(color: Colors.white)),
+                  child: const Text('Log in', style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
@@ -98,8 +98,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            title: Text('فشل التسجيل'),
-            content: Text(result["message"] ?? "حدث خطأ غير متوقع"),
+            title: Text('Registration failed'),
+            content: Text(result["message"] ?? "An unexpected error occurred"),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
