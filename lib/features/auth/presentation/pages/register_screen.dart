@@ -3,7 +3,6 @@ import 'package:task_management_app/features/auth/data/repositories/auth_reposit
 import 'login_screen.dart';
 import 'dart:convert';
 
-
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
 
@@ -29,8 +28,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final AuthRepository _authRepository = AuthRepository();
 
-  // دالة التسجيل
+  /// متغير لتخزين أخطاء السيرفر وربطها بالحقول
+  Map<String, String> serverErrors = {};
+
   void _onRegisterPressed() async {
+    // تصفير أخطاء الباكند قبل كل محاولة تسجيل
+    setState(() => serverErrors.clear());
+
     if (_formKey.currentState!.validate()) {
       Map<String, dynamic> data = {
         "fullName": nameController.text,
@@ -58,8 +62,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (!mounted) return;
 
+      // تحقق هل التسجيل ناجح أم لا (عدّل حسب استجابة الباكند عندك)
       if (result["success"] == true) {
-        // فقط عند النجاح!
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
@@ -96,38 +100,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
       } else {
-        // In case of error
-        showDialog(
-          context: context,
-          builder: (_) {
-            // We are trying to decode the JSON if it is really JSON
-            String errorMessage = "";
-            try {
-              final errorObj = jsonDecode(result["message"]);
-              if (errorObj is Map) {
-                errorObj.forEach((key, value) {
-                  errorMessage += "$value\n";
-                });
-              } else {
-                errorMessage = result["message"].toString();
-              }
-            } catch (e) {
-              // If JSON decoding fails, we display the text as is.
-              errorMessage = result["message"].toString();
-            }
-
-            return AlertDialog(
-              title: Text('Registration failed'),
-              content: Text(errorMessage.trim()),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('Ok'),
-                ),
-              ],
-            );
-          },
-        );
+        // فك الأخطاء من الباكند وخزنها في المتغير
+        try {
+          final errorObj = jsonDecode(result["message"]);
+          if (errorObj is Map) {
+            errorObj.forEach((key, value) {
+              if (value != null) serverErrors[key] = value.toString();
+            });
+          }
+        } catch (e) {
+          // لو فشل فك JSON أو كان الرد نص عادي، أضف رسالة عامة
+          serverErrors["general"] = result["message"].toString();
+        }
+        // إعادة بناء الواجهة لعرض الأخطاء تحت الحقول
+        setState(() {});
+        // لو فيه رسالة خطأ عامة ما تخص حقل معيّن
+        if (serverErrors.containsKey("general")) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(serverErrors["general"]!),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 5),
+            ),
+          );
+        }
       }
     }
   }
@@ -138,7 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: const Color(0xFFE0E0E0),
       body: Center(
         child: Container(
-          width: 350,
+          width: 525,
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -193,10 +189,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   TextFormField(
                     controller: nameController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       prefixIcon: Icon(Icons.person_outline),
                       labelText: 'Full Name',
                       hintText: 'Enter your full name',
+                      errorText: serverErrors['fullName'], // ربط رسالة الباكند
                     ),
                     validator: (value) => value!.isEmpty ? 'Full name required' : null,
                   ),
@@ -204,10 +201,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   TextFormField(
                     controller: emailController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       prefixIcon: Icon(Icons.email_outlined),
                       labelText: 'Email',
                       hintText: 'example@email.com',
+                      errorText: serverErrors['email'],
                     ),
                     validator: (value) => value!.isEmpty ? 'Email required' : null,
                   ),
@@ -215,23 +213,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   TextFormField(
                     controller: phoneController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       prefixIcon: Icon(Icons.phone_outlined),
                       labelText: 'Phone Number',
                       hintText: '05XXXXXXXX',
+                      errorText: serverErrors['mobileNumber'],
                     ),
                     keyboardType: TextInputType.phone,
                     validator: (value) => value!.isEmpty ? 'Phone required' : null,
                   ),
+
                   const SizedBox(height: 12),
 
                   TextFormField(
                     controller: passwordController,
                     obscureText: !showPassword,
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.lock_outline),
+                      prefixIcon: Icon(Icons.lock_outline),
                       labelText: 'Password',
                       hintText: 'Choose a strong password',
+                      errorText: serverErrors['password'],
                       suffixIcon: IconButton(
                         icon: Icon(showPassword ? Icons.visibility : Icons.visibility_off),
                         onPressed: () => setState(() => showPassword = !showPassword),
@@ -239,25 +240,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     validator: (value) => value!.isEmpty ? 'Password required' : null,
                   ),
+
+
                   const SizedBox(height: 12),
 
                   if (userType == 'Client') ...[
                     TextFormField(
                       controller: companyController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         prefixIcon: Icon(Icons.business_outlined),
                         labelText: 'Company Name',
                         hintText: 'Your company name',
+                        errorText: serverErrors['companyName'],
                       ),
                       validator: (value) => value!.isEmpty ? 'Company name required' : null,
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: addressController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         prefixIcon: Icon(Icons.location_on_outlined),
                         labelText: 'Address',
                         hintText: 'Company address',
+                        errorText: serverErrors['address'],
                       ),
                       validator: (value) => value!.isEmpty ? 'Address required' : null,
                     ),
@@ -270,6 +275,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: InputDecoration(
                         labelText: 'Job Title',
                         prefixIcon: Icon(Icons.work),
+                        errorText: serverErrors['jobTitle'],
                       ),
                       validator: (value) => value!.isEmpty ? 'Job title required' : null,
                     ),
@@ -279,6 +285,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: InputDecoration(
                         labelText: 'Department',
                         prefixIcon: Icon(Icons.apartment),
+                        errorText: serverErrors['department'],
                       ),
                       validator: (value) => value!.isEmpty ? 'Department required' : null,
                     ),
@@ -289,9 +296,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _onRegisterPressed,
-                      child: const Text('Sign Up', style: TextStyle(fontSize: 18)),
+                      child: const Text('Sign Up', style: TextStyle(fontSize: 18, color: Colors.white)),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: Color(0xFF20283D),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -306,7 +313,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         MaterialPageRoute(builder: (_) => const LoginScreen()),
                       );
                     },
-                    child: const Text("Already have an account? Log in"),
+                    child: const Text("Already have an account? Log in",style: TextStyle(color: Color(0xFF20283D),
+                      ),
+                    ),
                   ),
                 ],
               ),
