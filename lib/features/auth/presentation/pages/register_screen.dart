@@ -18,9 +18,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
   // for Employee
   final TextEditingController jobTitleController = TextEditingController();
   final TextEditingController departmentController = TextEditingController();
+  final TextEditingController jobNumberController = TextEditingController();
+
   // for Client
   final TextEditingController companyController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
@@ -29,7 +32,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final AuthRepository _authRepository = AuthRepository();
 
   /// متغير لتخزين أخطاء السيرفر وربطها بالحقول
-  Map<String, String> serverErrors = {};
+  Map<String, String>
+
+  serverErrors = {};
 
   void _onRegisterPressed() async {
     // تصفير أخطاء الباكند قبل كل محاولة تسجيل
@@ -53,6 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       } else if (userType == 'Employee') {
         data.addAll({
           "jobTitle": jobTitleController.text,
+          "jobNumber": jobNumberController.text,
           "department": departmentController.text,
           "userType": "Employee",
         });
@@ -62,44 +68,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (!mounted) return;
 
-      // تحقق هل التسجيل ناجح أم لا (عدّل حسب استجابة الباكند عندك)
+// تحقق هل التسجيل ناجح أم لا (عدّل حسب استجابة الباكند عندك)
       if (result["success"] == true) {
         showDialog(
           context: context,
-          builder: (_) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.check_circle, color: Colors.green, size: 50),
-                const SizedBox(height: 16),
-                Text(
-                  'You have been successfully registered',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-                const SizedBox(height: 8),
-                Text('You can now log in to your account'),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF20283D),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+          builder: (_) =>
+              AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16)),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green, size: 50),
+                    const SizedBox(height: 16),
+                    Text(
+                      'You have been successfully registered',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
                     ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    );
-                  },
-                  child: const Text('Log in', style: TextStyle(color: Colors.white)),
+                    const SizedBox(height: 8),
+                    Text('You can now log in to your account'),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF20283D),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (_) => const LoginScreen()),
+                        );
+                      },
+                      child: const Text(
+                          'Log in', style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
         );
       } else {
+        // أفرغ الأخطاء السابقة أولاً
+        serverErrors.clear();
+
         // فك الأخطاء من الباكند وخزنها في المتغير
         try {
           final errorObj = jsonDecode(result["message"]);
@@ -107,9 +121,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
             errorObj.forEach((key, value) {
               if (value != null) serverErrors[key] = value.toString();
             });
+          } else if (errorObj is String) {
+            // لو رجع نص فقط
+            serverErrors["general"] = errorObj;
           }
         } catch (e) {
-          // لو فشل فك JSON أو كان الرد نص عادي، أضف رسالة عامة
+          // لو فشل فك JSON أو كان الرد نص عادي
           serverErrors["general"] = result["message"].toString();
         }
         // إعادة بناء الواجهة لعرض الأخطاء تحت الحقول
@@ -119,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(serverErrors["general"]!),
-              backgroundColor: Colors.red,
+              backgroundColor: Colors. red ,
               duration: Duration(seconds: 5),
             ),
           );
@@ -127,6 +144,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -167,24 +185,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 18),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Radio<String>(
+                  SegmentedButton<String>(
+                    segments: const <ButtonSegment<String>>[
+                      ButtonSegment<String>(
                         value: 'Client',
-                        groupValue: userType,
-                        onChanged: (value) => setState(() => userType = value!),
+                        label: Text('Client'),
+                        icon: Icon(Icons.business),
                       ),
-                      const Text('Client'),
-                      const SizedBox(width: 24),
-                      Radio<String>(
+                      ButtonSegment<String>(
                         value: 'Employee',
-                        groupValue: userType,
-                        onChanged: (value) => setState(() => userType = value!),
+                        label: Text('Employee'),
+                        icon: Icon(Icons.person),
                       ),
-                      const Text('Employee'),
                     ],
+                    selected: <String>{userType},
+                    onSelectionChanged: (Set<String> newSelection) {
+                      setState(() {
+                        userType = newSelection.first;
+                      });
+                    },
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(EdgeInsets.symmetric(horizontal: 15)),
+                    ),
                   ),
+
+
+
                   const SizedBox(height: 18),
 
                   TextFormField(
@@ -288,6 +314,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         errorText: serverErrors['department'],
                       ),
                       validator: (value) => value!.isEmpty ? 'Department required' : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: jobNumberController,
+                      decoration: InputDecoration(
+                        labelText: 'Job Number',
+                        prefixIcon: Icon(Icons.account_box),
+                        errorText: serverErrors['jobNumber'],
+                      ),
+                      validator: (value) => value!.isEmpty ? 'Job Number required' : null,
                     ),
                     const SizedBox(height: 12),
                   ],
