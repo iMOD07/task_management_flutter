@@ -152,7 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: const Color(0xFFE0E0E0),
       body: Center(
         child: Container(
-          width: 525,
+          width: 550,
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
             color: Colors.white,
